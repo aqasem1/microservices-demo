@@ -29,8 +29,8 @@ cartsdb:
             cpu: 500m
             memory: 512Mi
     persistentVolume:
-        storageClass: ''
-        size: 512Mi
+        storageClass: 'standard'
+        size: 1024Mi
 
 carts:
     image:
@@ -39,11 +39,19 @@ carts:
     containerPort: 80
     resources:
         limits:
-            cpu: 1000m
+            cpu: 300m
             memory: 2000Mi
         requests:
             cpu: 300m
             memory: 2000Mi
+    hpa:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 5
+        cpu:
+            averageUtilization: 40
+        memory:
+            averageUtilization: 40
 
 cataloguedb:
     image:
@@ -56,6 +64,10 @@ cataloguedb:
         requests:
             cpu: 100m
             memory: 300Mi
+    persistentVolume:
+        storage: 1Gi
+        storageClassName: "standard"
+
 
 catalogue:
     image:
@@ -69,6 +81,15 @@ catalogue:
         requests:
             cpu: 100m
             memory: 100Mi
+    hpa:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        cpu:
+            averageUtilization: 40
+        memory:
+            averageUtilization: 40
+
 
 frontend:
     replicas: 1
@@ -82,6 +103,14 @@ frontend:
         requests:
             cpu: 100m
             memory: 300Mi
+    hpa:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        cpu:
+            averageUtilization: 40
+        memory:
+            averageUtilization: 40
 
 loadtest:
     replicas: 2
@@ -109,7 +138,7 @@ ordersdb:
             cpu: 500m
             memory: 512Mi
     persistentVolume:
-        storageClass: ''
+        storageClass: 'standard'
         size: 512Mi
 
 orders:
@@ -124,6 +153,16 @@ orders:
         requests:
             cpu: 200m
             memory: 2000Mi
+    hpa:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 5
+        cpu:
+            averageUtilization: 40
+        memory:
+            averageUtilization: 40
+
+
 
 payment:
     image:
@@ -138,6 +177,16 @@ payment:
         requests:
             cpu: 100m
             memory: 100Mi
+    hpa:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        cpu:
+            averageUtilization: 40
+        memory:
+            averageUtilization: 40
+
+
 
 queuemaster:
     image:
@@ -175,7 +224,7 @@ sessiondb:
             memory: 256Mi
             cpu: 250m
     persistentVolume:
-        storageClass: ''
+        storageClass: 'standard'
         size: 512Mi
 
 shipping:
@@ -202,7 +251,9 @@ userdb:
         requests:
             cpu: 100m
             memory: 300Mi
-
+    persistentVolume:
+        storageClass: 'standard'
+        size: 512Mi
 user:
     image:
         repo: weaveworksdemos/user

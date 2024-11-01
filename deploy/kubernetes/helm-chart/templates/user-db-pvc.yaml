@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: userdb-mongo-pvc
+  labels:
+    app: user-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.userdb.persistentVolume.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.userdb.persistentVolume.size }}

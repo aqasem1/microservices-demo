@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ordersdb-mongo-pvc
+  labels:
+    app: orders-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.ordersdb.persistentVolume.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.ordersdb.persistentVolume.size }}

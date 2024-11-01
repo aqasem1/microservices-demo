@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cartsdb-mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.cartsdb.persistentVolume.size }}
+  storageClassName: {{ .Values.cartsdb.persistentVolume.storageClass | default "standard" }}
