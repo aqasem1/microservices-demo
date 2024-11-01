@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 global:
-    registry: ' '
+    registry: ''
 
 java:
     options: -Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
@@ -14,7 +14,7 @@ ingress:
     annotations:
         kubernetes.io/ingress.class: nginx
     labels: {}
-    host: ''
+    host: 'test.test'
     tlsSecretName: ''
 
 cartsdb:
@@ -39,7 +39,7 @@ carts:
     containerPort: 80
     resources:
         limits:
-            cpu: 300m
+            cpu: 1000m
             memory: 2000Mi
         requests:
             cpu: 300m
