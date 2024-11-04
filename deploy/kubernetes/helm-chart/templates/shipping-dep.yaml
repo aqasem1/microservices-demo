@@ -14,8 +14,10 @@ spec:
     metadata:
       labels:
         name: shipping
-      {{- if .Values.istio.enabled }}
+
       annotations:
+          instrumentation.opentelemetry.io/inject-java: "true"
+      {{- if .Values.istio.enabled }}
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       {{- end }}
     spec:
