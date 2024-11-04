@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: session-db
+  labels:
+    name: session-db
+spec:
+  serviceName: "session-db-service"  # Required for StatefulSets to provide stable network identities
+  replicas: 1
+  selector:
+    matchLabels:
+      name: session-db
+  template:
+    metadata:
+      labels:
+        name: session-db
+    spec:
+      containers:
+        - name: session-db
+          image: {{ if .Values.global.registry }}{{ .Values.global.registry }}/{{ end }}{{ .Values.sessiondb.image.repo }}:{{ .Values.sessiondb.image.tag }}
+          ports:
+            - name: redis
+              containerPort: 6379
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+          resources:
+{{ toYaml .Values.sessiondb.resources | indent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: redis-storage
+      volumes:
+        - name: redis-storage
+          persistentVolumeClaim:
+            claimName: session-db-pvc
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory

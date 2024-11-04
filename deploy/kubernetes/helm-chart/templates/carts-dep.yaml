@@ -6,7 +6,7 @@ metadata:
   labels:
     name: carts
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       name: carts
@@ -14,8 +14,10 @@ spec:
     metadata:
       labels:
         name: carts
-      {{- if .Values.istio.enabled }}
+
       annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
+      {{- if .Values.istio.enabled }}
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       {{- end }}
     spec:

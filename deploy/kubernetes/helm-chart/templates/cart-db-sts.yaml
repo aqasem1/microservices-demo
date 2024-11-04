@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: carts-db
+  labels:
+    name: carts-db
+spec:
+  serviceName: "carts-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      name: carts-db
+  template:
+    metadata:
+      labels:
+        name: carts-db
+    spec:
+      containers:
+        - name: carts-db
+          image: {{if .Values.global.registry}}{{ .Values.global.registry }}/{{end}}{{ .Values.cartsdb.image.repo }}:{{ .Values.cartsdb.image.tag }}
+          ports:
+            - name: mongo
+              containerPort: 27017
+          args: ["--unixSocketPrefix=/var/run/mongodb"]
+          resources:
+            requests:
+              cpu: {{ .Values.cartsdb.resources.requests.cpu }}
+              memory: {{ .Values.cartsdb.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.cartsdb.resources.limits.cpu }}
+              memory: {{ .Values.cartsdb.resources.limits.memory }}
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /data/db
+              name: cartsdb-mongo-pvc  # Updated PVC name in volumeMounts
+            - mountPath: /var/run/mongodb
+              name: socket-volume
+      volumes:
+        - name: cartsdb-mongo-pvc  # Updated PVC name in volumes
+          persistentVolumeClaim:
+            claimName: cartsdb-mongo-pvc
+        - name: socket-volume
+          emptyDir: {}

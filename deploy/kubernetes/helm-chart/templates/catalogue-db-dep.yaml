@@ -1,11 +1,11 @@
----
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: catalogue-db
   labels:
     name: catalogue-db
 spec:
+  serviceName: "catalogue-db"  # Name of the service for this StatefulSet
   replicas: 1
   selector:
     matchLabels:
@@ -16,16 +16,22 @@ spec:
         name: catalogue-db
     spec:
       containers:
-      - name: catalogue-db
-        image: {{if .Values.global.registry}}{{ .Values.global.registry }}/{{end}}{{ .Values.cataloguedb.image.repo }}:{{ .Values.cataloguedb.image.tag }}
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: fake_password
-          - name: MYSQL_DATABASE
-            value: socksdb
-        ports:
-        - name: mysql
-          containerPort: 3306
-        resources:
-{{ toYaml .Values.cataloguedb.resources | indent 10 }}
-
+        - name: catalogue-db
+          image: {{if .Values.global.registry}}{{ .Values.global.registry }}/{{end}}{{ .Values.cataloguedb.image.repo }}:{{ .Values.cataloguedb.image.tag }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: fake_password
+            - name: MYSQL_DATABASE
+              value: socksdb
+          ports:
+            - name: mysql
+              containerPort: 3306
+          resources:
+{{ toYaml .Values.cataloguedb.resources | indent 12 }}
+          volumeMounts:
+            - mountPath: /var/lib/mysql  # Default MySQL data directory
+              name: mysql-pvc  # PVC name
+      volumes:
+        - name: mysql-pvc
+          persistentVolumeClaim:
+            claimName: mysql-pvc  # Reference to the PVC
